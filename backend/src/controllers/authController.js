@@ -6,4 +6,5 @@ function getMe(req, res) {
 
 module.exports = {
   getMe,
+  syncUser: getMe,
 };

@@ -1,7 +1,14 @@
 const pool = require("../config/db");
 
-async function findUserByFirebaseUid(firebaseUid) {
-  const [rows] = await pool.query(
+const USER_SELECT_FIELDS =
+  "id, firebase_uid, nickname, email, points, character_stage, created_at, updated_at";
+
+function getDb(db) {
+  return db || pool;
+}
+
+async function findUserByFirebaseUid(firebaseUid, db) {
+  const [rows] = await getDb(db).query(
     `SELECT id, firebase_uid, nickname, email, points, character_stage, created_at, updated_at
      FROM users
      WHERE firebase_uid = ?
@@ -12,29 +19,33 @@ async function findUserByFirebaseUid(firebaseUid) {
   return rows[0] || null;
 }
 
-async function createUser({ firebaseUid, email, nickname }) {
+async function findUserById(userId, db) {
+  const [rows] = await getDb(db).query(
+    `SELECT ${USER_SELECT_FIELDS}
+     FROM users
+     WHERE id = ?
+     LIMIT 1`,
+    [userId]
+  );
+
+  return rows[0] || null;
+}
+
+async function createUser({ firebaseUid, email, nickname }, db) {
   const safeEmail = email || `${firebaseUid}@firebase.local`;
   const safeNickname = nickname || safeEmail.split("@")[0];
 
-  const [result] = await pool.query(
+  const [result] = await getDb(db).query(
     `INSERT INTO users (firebase_uid, nickname, email, points, character_stage)
      VALUES (?, ?, ?, 0, 'egg')`,
     [firebaseUid, safeNickname, safeEmail]
   );
 
-  const [rows] = await pool.query(
-    `SELECT id, firebase_uid, nickname, email, points, character_stage, created_at, updated_at
-     FROM users
-     WHERE id = ?
-     LIMIT 1`,
-    [result.insertId]
-  );
-
-  return rows[0];
+  return findUserById(result.insertId, db);
 }
 
-async function findOrCreateUserByFirebase({ firebaseUid, email, nickname }) {
-  const existingUser = await findUserByFirebaseUid(firebaseUid);
+async function findOrCreateUserByFirebase({ firebaseUid, email, nickname }, db) {
+  const existingUser = await findUserByFirebaseUid(firebaseUid, db);
 
   if (existingUser) {
     return existingUser;
@@ -44,10 +55,11 @@ async function findOrCreateUserByFirebase({ firebaseUid, email, nickname }) {
     firebaseUid,
     email,
     nickname,
-  });
+  }, db);
 }
 
 module.exports = {
   findOrCreateUserByFirebase,
   findUserByFirebaseUid,
+  findUserById,
 };

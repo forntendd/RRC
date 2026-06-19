@@ -4,6 +4,8 @@ const morgan = require("morgan");
 
 const authRoutes = require("./routes/authRoutes");
 const healthRoutes = require("./routes/healthRoutes");
+const questionRoutes = require("./routes/questionRoutes");
+const userRoutes = require("./routes/userRoutes");
 
 const app = express();
 
@@ -18,6 +20,8 @@ app.use(morgan("dev"));
 
 app.use("/api/health", healthRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/users", userRoutes);
+app.use("/api/questions", questionRoutes);
 
 app.use((req, res) => {
   res.status(404).json({
