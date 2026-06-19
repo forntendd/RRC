@@ -14,7 +14,8 @@ function AppLayout() {
   return (
     <div className="app-shell">
       <header className="topbar">
-        <Link className="brand" to="/home">
+        <Link className="brand" to="/home" aria-label="RRC 홈">
+          <span className="brand-mark">🍯</span>
           RRC
         </Link>
         <nav className="nav">

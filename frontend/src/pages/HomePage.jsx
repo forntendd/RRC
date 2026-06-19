@@ -7,18 +7,23 @@ function HomePage() {
   const { dbUser } = useAuth();
 
   return (
-    <div className="page-grid">
+    <div className="home-page">
       <CharacterCard user={dbUser} />
-      <section className="action-panel">
-        <p className="eyebrow">다음 행동</p>
-        <h2>꿀 따러가기</h2>
+      <section className="growth-guide">
+        <p className="eyebrow">성장 규칙</p>
+        <div className="growth-steps">
+          <span>🥚 0P</span>
+          <span>🐣 100P</span>
+          <span>🐥 300P</span>
+          <span>✨ 500P</span>
+        </div>
         <p className="muted">
-          질문을 작성하면 10P, 답변을 작성하면 20P를 얻습니다.
+          질문을 작성하면 10P, 답변을 작성하면 20P가 쌓입니다.
         </p>
-        <Link className="primary-button inline-link" to="/board">
-          꿀 따러가기
-        </Link>
       </section>
+      <Link className="floating-honey-button" to="/board">
+        🍯 꿀 따러가기
+      </Link>
     </div>
   );
 }
