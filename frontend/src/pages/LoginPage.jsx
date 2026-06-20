@@ -3,6 +3,17 @@ import { Navigate, useLocation, useNavigate } from "react-router-dom";
 
 import { useAuth } from "../context/AuthContext.jsx";
 
+const authErrorMessages = {
+  "auth/email-already-in-use": "이미 가입된 이메일입니다. 로그인으로 시도해주세요.",
+  "auth/invalid-api-key": "Firebase API 키 설정이 올바르지 않습니다.",
+  "auth/invalid-credential": "이메일 또는 비밀번호가 올바르지 않습니다.",
+  "auth/invalid-email": "이메일 형식이 올바르지 않습니다.",
+  "auth/operation-not-allowed": "Firebase에서 Email/Password 로그인을 켜야 합니다.",
+  "auth/user-not-found": "가입되지 않은 이메일입니다.",
+  "auth/weak-password": "비밀번호는 6자 이상이어야 합니다.",
+  "auth/wrong-password": "비밀번호가 올바르지 않습니다.",
+};
+
 function LoginPage() {
   const { hasFirebaseConfig, isAuthenticated, loading, login, register } =
     useAuth();
@@ -34,7 +45,11 @@ function LoginPage() {
       const destination = location.state?.from?.pathname || "/home";
       navigate(destination, { replace: true });
     } catch (submitError) {
-      setError("이메일, 비밀번호 또는 Firebase 설정을 확인해주세요.");
+      setError(
+        authErrorMessages[submitError.code] ||
+          submitError.message ||
+          "이메일, 비밀번호 또는 Firebase 설정을 확인해주세요."
+      );
     } finally {
       setSubmitting(false);
     }
